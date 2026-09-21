@@ -2,7 +2,7 @@
 
 **Fakeddit** - A CLI style Reddit clone built in distributed fashion using Gleam actor model that interacts with REST API.
 
-### Fakeddit Features
+## Fakeddit Features
 - User registration and authentication
 - Username-based login
 - Create and join subfakeddits
@@ -13,7 +13,7 @@
 - Karma tracking
 - Direct messaging
 
-### At a Glance
+## At a Glance
 - **Processes for individual functionality are distributed to individual actors of Gleam OTP**
 - **Upstream is singular engine but downstream data is distributed across 3 engines**
   - Upstream mutation and write to disk is instantaneous using a single engine shard
