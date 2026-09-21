@@ -1,10 +1,6 @@
 # Project 4 : A full stack app that uses OTP actor models and REST API
 
----
-
-## Project Description
-
-Fakeddit - A CLI style Reddit clone built in distributed fashion using Gleam actor model that interacts with REST API.
+**Fakeddit** - A CLI style Reddit clone built in distributed fashion using Gleam actor model that interacts with REST API.
 
 ### Fakeddit Features
 - User registration and authentication
@@ -17,9 +13,21 @@ Fakeddit - A CLI style Reddit clone built in distributed fashion using Gleam act
 - Karma tracking
 - Direct messaging
 
-### Demo Link
-[Part 1](https://youtu.be/GL0lluVZqe8)
-[Part 2 (PKI Auth)](https://youtu.be/mxsOeqVbmPg)
+### At a Glance
+- **Processes for individual functionality are distributed to individual actors of Gleam OTP**
+- **Upstream is singular engine but downstream data is distributed across 3 engines**
+  - Upstream mutation and write to disk is instantaneous using a single engine shard
+  - Downstream refresh has a TTL cache of 500ms to achieve eventual consistency between 3 engine shards
+  - Router routes traffic appropriately through engines
+- **CLI based frontend app**
+- **HTTP based simulator app to populate the social media**
+  - A lot of user activity follows Zipf distribution and other interesting patterns to emulate actual user activity
+- **Back end works with REST API**
+  - Implements a WISP/MIST HTTP server with REST endpoints
+  - Persistent data storage in JSON format
+- **Demo**
+[Part 1](demo.mp4)
+[Part 2 (PKI Auth)](demo_2.mp4)
 
 ---
 
@@ -65,28 +73,19 @@ gleam run -m http_simulator <users> <subfakeddits> <posts> <comments> <votes> <m
 ## Architecture
 
 1. **HTTP Client Layer (Front End CLI App/Simulator/Direct HTTP)**  
-   *REST API Calls*
-2. **Wisp HTTP Server (Port 8000) (`api_handlers.gleam`)**  
-   *Routes requests*
+   |\
+   |  REST API Calls\
+   V
+2. **Wisp HTTP Server (Port 8000) (`api_handlers.gleam`)**\
+   |\
+   |  Router Requests\
+   V
 3. **Router Actor (`router_actor.gleam`)**  
    a. **Mutations** - Write Engine Shard - Saves to `fakeddit_state.json`  
    b. **Feed Queries** - Client wide feed Engine Shard - Reads from TTL Cache  
    c. **User Queries** - User specific Engine Shard - Reads from TTL Cache  
    d. **Misc Queries** - Karma/Voting/DMing Engine Shard - Reads from TTL Cache  
 4. **TTL Cache** - updated from `fakeddit_state.json` every 500ms  
-
-- Notes : 
-- **Processes for individual functionality are distributed to individual actors of Gleam OTP**
-- **Upstream is singular engine but downstream data is distributed across 3 engines**
-  - Upstream mutation and write to disk is instantaneous using a single engine shard
-  - Downstream refresh has a TTL cache of 500ms to achieve eventual consistency between 3 engine shards
-  - Router routes traffic appropriately through engines
-- **CLI based frontend app**
-- **HTTP based simulator app to populate the social media**
-  - A lot of user activity follows Zipf distribution and other interesting patterns to emulate actual user activity
-- **Back end works with REST API**
-  - Implements a WISP/MIST HTTP server with REST endpoints
-  - Persistent data storage in JSON format
 
 ---
 
@@ -103,7 +102,7 @@ gleam run -m http_simulator <users> <subfakeddits> <posts> <comments> <votes> <m
 
 ---
 
-## Security Features Added (in part 2/bonus section):
+## Security Features Added ([in bonus part](/fakeddit_bonus_pki_auth/)):
 
 ### Digital Signatures
 Every post is digitally signed using HMAC-SHA256 with the author's private key at the time of creation. The signature is a 256-bit hash, also stored as Base64 (44 characters). The canonical message format signed is:
