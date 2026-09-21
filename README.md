@@ -1,4 +1,4 @@
-# Project 4 : A full stack app that uses OTP actor models and REST API
+# Project 4 : A full stack app that uses Actor model and REST API
 
 **Fakeddit** - A CLI style Reddit clone built in distributed fashion using Gleam actor model that interacts with REST API.
 
