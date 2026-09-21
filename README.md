@@ -102,19 +102,6 @@ gleam run -m http_simulator <users> <subfakeddits> <posts> <comments> <votes> <m
 
 ---
 
-## Security Features Added ([in bonus part](/fakeddit_bonus_pki_auth/)):
-
-### Digital Signatures
-Every post is digitally signed using HMAC-SHA256 with the author's private key at the time of creation. The signature is a 256-bit hash, also stored as Base64 (44 characters). The canonical message format signed is:
-```text
-post_id|author_id|title|content timestamp-
-```
-
-### Public Key Infrastructure
-Each user has a unique keypair (public key + private key). Key pair is generated at registration; the user has the option to provide their own public key (in base64 encoding, 32-bytes format) or use the auto-generated one. Keys are automatically generated during registration using `crypto:strong_rand_bytes(32)`. Private keys are stored in server-side persistent storage. Signatures are verified on every post retrieval (invalid signature returns error). Public keys are retrievable via API: `GET /api/v1/accounts/:user_id/public-key`.
-
----
-
 ## Engine Shard specific Actors
 
 ### WRITE SHARD (Handles all mutations)
@@ -150,7 +137,7 @@ Each user has a unique keypair (public key + private key). Key pair is generated
 
 ## REST API (`api_handlers.gleam`)
 
-Complete REST API with endpoints:
+REST API endpoints:
 
 ### Users
 - `POST /api/v1/users/register` - Register new user
@@ -210,3 +197,15 @@ curl http://localhost:8000/api/v1/stats
 # View a post
 curl http://localhost:8000/api/v1/posts/post_123
 ```
+---
+
+## Security Features Added ([in bonus part](/fakeddit_bonus_pki_auth/)):
+
+### Digital Signatures
+Every post is digitally signed using HMAC-SHA256 with the author's private key at the time of creation. The signature is a 256-bit hash, also stored as Base64 (44 characters). The canonical message format signed is:
+```text
+post_id|author_id|title|content timestamp-
+```
+
+### Public Key Infrastructure
+Each user has a unique keypair (public key + private key). Key pair is generated at registration; the user has the option to provide their own public key (in base64 encoding, 32-bytes format) or use the auto-generated one. Keys are automatically generated during registration using `crypto:strong_rand_bytes(32)`. Private keys are stored in server-side persistent storage. Signatures are verified on every post retrieval (invalid signature returns error). Public keys are retrievable via API: `GET /api/v1/accounts/:user_id/public-key`.
